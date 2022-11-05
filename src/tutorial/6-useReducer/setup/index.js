@@ -9,13 +9,15 @@ const Index = () => {
   const [people, setPeople] = useState(data);
 
   const handleSubmit = (e) => {
+    setShowModal(false);
     e.preventDefault();
     setPeople([...people, { name, id: new Date().getTime().toString() }]);
     setName("");
   };
 
   const handleRemove = (id) => {
-    console.log(id);
+    setPeople(people.filter((person) => person.id !== id));
+    setShowModal(true);
   };
 
   return (
@@ -30,6 +32,7 @@ const Index = () => {
         </div>
         <button type="submit">Add</button>
       </form>
+      {showModal && <Modal />}
       {people &&
         people.map((person) => (
           <article key={person.id}>
