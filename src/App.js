@@ -5,7 +5,6 @@ import Final from "./tutorial/6-useReducer/final";
 function App() {
   return (
     <div className="container">
-      <Final />
       <Setup />
     </div>
   );

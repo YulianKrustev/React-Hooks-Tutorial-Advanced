@@ -3,21 +3,48 @@ import Modal from "./Modal";
 import { data } from "../../../data";
 // reducer function
 
+const reducer = (state, action) => {
+  console.log(state);
+  if (action.type === "ADDPERSON") {
+    const newPerson = {
+      ...state,
+      people: [
+        ...state.people,
+        { id: new Date().getTime().toString(), name: action.payload },
+      ],
+    };
+
+    return newPerson;
+  }
+
+  if (action.type === "REMOVEITEM") {
+    const peopleAfterRemove = [
+      ...state.people.filter((person) => person.id != action.payload),
+    ];
+    const newPeople = { ...state, people: peopleAfterRemove };
+    return newPeople;
+  }
+};
+
+const defaultState = {
+  people: [],
+  showModal: false,
+  text: "Test",
+};
+
 const Index = () => {
   const [name, setName] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [people, setPeople] = useState(data);
+  const [state, dispetch] = useReducer(reducer, defaultState);
 
   const handleSubmit = (e) => {
-    setShowModal(false);
     e.preventDefault();
-    setPeople([...people, { name, id: new Date().getTime().toString() }]);
+
+    dispetch({ type: "ADDPERSON", payload: name });
     setName("");
   };
 
   const handleRemove = (id) => {
-    setPeople(people.filter((person) => person.id !== id));
-    setShowModal(true);
+    dispetch({ type: "REMOVEITEM", payload: id });
   };
 
   return (
@@ -32,9 +59,9 @@ const Index = () => {
         </div>
         <button type="submit">Add</button>
       </form>
-      {showModal && <Modal />}
-      {people &&
-        people.map((person) => (
+      {state.showModal && <Modal text={state.text} />}
+      {state.people &&
+        state.people.map((person) => (
           <article key={person.id}>
             <div className="item">
               <h4>{person.name}</h4>
