@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useEffect, useRef } from "react";
 import Modal from "./Modal";
 import { data } from "../../../data";
 import { reducer } from "../setup/reducer.js";
@@ -12,6 +12,10 @@ const defaultState = {
 const Index = () => {
   const [name, setName] = useState("");
   const [state, dispetch] = useReducer(reducer, defaultState);
+  const inputRef = useRef(null);
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -38,6 +42,7 @@ const Index = () => {
       <form className="form" onSubmit={handleSubmit}>
         <div>
           <input
+            ref={inputRef}
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
