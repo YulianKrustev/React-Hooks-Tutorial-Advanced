@@ -1,35 +1,12 @@
 import React, { useState, useReducer } from "react";
 import Modal from "./Modal";
 import { data } from "../../../data";
-// reducer function
-
-const reducer = (state, action) => {
-  console.log(state);
-  if (action.type === "ADDPERSON") {
-    const newPerson = {
-      ...state,
-      people: [
-        ...state.people,
-        { id: new Date().getTime().toString(), name: action.payload },
-      ],
-    };
-
-    return newPerson;
-  }
-
-  if (action.type === "REMOVEITEM") {
-    const peopleAfterRemove = [
-      ...state.people.filter((person) => person.id != action.payload),
-    ];
-    const newPeople = { ...state, people: peopleAfterRemove };
-    return newPeople;
-  }
-};
+import { reducer } from "../setup/reducer.js";
 
 const defaultState = {
   people: [],
   showModal: false,
-  text: "Test",
+  modalContent: "",
 };
 
 const Index = () => {
@@ -39,12 +16,21 @@ const Index = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    dispetch({ type: "ADDPERSON", payload: name });
-    setName("");
+    if (name) {
+      const newPerson = { id: new Date().getTime().toString(), name };
+      dispetch({ type: "ADD_PERSON", payload: newPerson });
+      setName("");
+    } else {
+      dispetch({ type: "NO_VALUE" });
+    }
   };
 
   const handleRemove = (id) => {
-    dispetch({ type: "REMOVEITEM", payload: id });
+    dispetch({ type: "REMOVE_ITEM", payload: id });
+  };
+
+  const hideModal = () => {
+    dispetch({ type: "HIDE_MODAL" });
   };
 
   return (
@@ -59,16 +45,17 @@ const Index = () => {
         </div>
         <button type="submit">Add</button>
       </form>
-      {state.showModal && <Modal text={state.text} />}
-      {state.people &&
-        state.people.map((person) => (
-          <article key={person.id}>
-            <div className="item">
-              <h4>{person.name}</h4>
-              <button onClick={() => handleRemove(person.id)}>remove</button>
-            </div>
-          </article>
-        ))}
+      {state.showModal && (
+        <Modal hideModal={hideModal} modalContent={state.modalContent} />
+      )}
+      {state.people.map((person) => (
+        <article key={person.id}>
+          <div className="item">
+            <h4>{person.name}</h4>
+            <button onClick={() => handleRemove(person.id)}>remove</button>
+          </div>
+        </article>
+      ))}
     </>
   );
 };
